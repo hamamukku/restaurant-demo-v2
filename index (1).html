@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Restaurant App Demo — Kyo Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#f9d048;          /* gold */
+  --ink:#ffffff;            /* white text */
+  --ink-muted:#cbd5e1;      /* light slate */
+  --bg:#000000;             /* black background */
+  --card:#0c0c0c;           /* deep card */
+  --line:rgba(249,208,72,.35); /* gold line subtle */
+  --accent:#10b981;         /* green for success badges */
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Serif JP",serif;-webkit-font-smoothing:antialiased}
+
+a{color:var(--brand);text-decoration:none}
+small.mininote{opacity:.85}
+
+/* Header */
+header{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.6));
+  backdrop-filter: blur(2px);
+  border-bottom:1px solid var(--line);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:12px;justify-content:space-between
+}
+.brand{
+  display:flex;align-items:center;gap:12px
+}
+.brand .logo{width:36px;height:36px;border-radius:8px;
+  background:conic-gradient(from 140deg, var(--brand), #7a5a12 40%, #111 60%, var(--brand) 100%);
+  box-shadow:0 0 0 1px var(--line), 0 2px 10px rgba(0,0,0,.6);
+}
+.brand h1{font-size:17px;margin:0;letter-spacing:.08em}
+.lang{display:flex;gap:8px}
+.lang a{font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--ink-muted)}
+.lang a.active{color:#000;background:var(--brand);border-color:var(--brand);font-weight:700}
+
+/* Container and Cards */
+.container{padding:16px 16px 88px;max-width:980px;margin:0 auto}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 2px 20px rgba(0,0,0,.25);
+  padding:16px;margin:12px 0;
+}
+.card h2{font-size:18px;margin:6px 0 10px 0;letter-spacing:.06em}
+.meta{font-size:12px;color:var(--ink-muted)}
+
+/* Hero slider */
+.slider{position:relative;border-radius:18px;overflow:hidden;height:42vh;min-height:240px;border:1px solid var(--line)}
+.slide{
+  position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;
+  padding:20px;background-size:cover;background-position:center;
+  transition:opacity .7s ease;opacity:0;
+}
+.slide.show{opacity:1}
+.slide::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.25) 55%, rgba(0,0,0,0));
+}
+.slide .copy{position:relative;z-index:2;max-width:70%}
+.slide h2{font-size:22px;margin:0 0 6px 0}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;font-size:12px;padding:4px 10px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--brand)}
+.controls{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 6px;pointer-events:none}
+.controls button{pointer-events:auto;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px 10px}
+
+/* Lists / items */
+.list{display:grid;gap:12px}
+.item{display:flex;gap:12px}
+.item .meta{opacity:.9}
+.qr{width:120px;height:120px;border:1px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--ink-muted)}
+
+/* Buttons */
+.btn{display:inline-block;background:var(--brand);color:#000;text-decoration:none;border:none;border-radius:999px;
+     padding:12px 16px;font-weight:700;cursor:pointer;box-shadow:0 2px 0 #000}
+.btn.line{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+
+/* Section titles */
+.section-ttl{position:relative;padding-left:12px;margin:20px 0 6px 0;font-size:16px;letter-spacing:.06em}
+.section-ttl::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:2px;background:var(--brand)}
+
+/* Store blocks */
+.store-grid{display:grid;gap:12px}
+@media(min-width:720px){.store-grid{grid-template-columns:1fr 1fr}}
+.table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.table td{border-top:1px solid var(--line);padding:8px 6px;vertical-align:top}
+.table tr:first-child td{border-top:none}
+
+/* Bottom Tab Nav */
+.footer-nav{position:fixed;left:0;right:0;bottom:0;background:#0a0a0a;border-top:1px solid var(--line);height:64px;display:flex}
+.footer-nav button{flex:1;background:transparent;border:none;font:inherit;color:var(--ink-muted)}
+.footer-nav .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.footer-nav .tab.active{color:var(--brand);font-weight:700}
+.hide{display:none}
+
+.small{font-size:12px;color:var(--ink-muted)}
+.tag{font-size:11px;background:rgba(249,208,72,.12);color:var(--brand);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:6px}
+hr.sep{border:none;border-top:1px solid var(--line);margin:16px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <h1 id="storeName">Sample</h1>
+      <div class="small">和風モダン × アプリ導線（デモ）</div>
+    </div>
+  </div>
+  <nav class="lang" aria-label="言語切替（デモ）">
+    <a href="#" class="active">日本語</a>
+    <a href="#">English</a>
+    <a href="#">한국어</a>
+    <a href="#">中文</a>
+  </nav>
+</header>
+
+<main class="container">
+  <!-- Home -->
+  <section id="home">
+    <div class="slider" id="slider">
+      <div class="slide show" style="background-image:linear-gradient(135deg,#1a1a1a,#111 40%,#2d1f00), radial-gradient(1200px 300px at 20% 100%, rgba(249,208,72,.25), transparent)">
+        <div class="copy">
+          <div class="badge">京風デザイン参照（ダミー）</div>
+          <h2>とうまん様、作成は私たちにお任せください。</h2>
+          <p class="small">画像はダミー。実案件では公式素材に差し替えます。</p>
+        </div>
+      </div>
+      <div class="slide" style="background-image:linear-gradient(135deg,#151515,#0d0d0d), radial-gradient(1000px 250px at 80% 100%, rgba(249,208,72,.18), transparent)">
+        <div class="copy">
+          <div class="badge">クーポン配信</div>
+          <h2>来店導線は、通知と特典でスマートに。</h2>
+          <p class="small">クーポンの有効期限・回数管理にも対応（デモ）。</p>
+        </div>
+      </div>
+      <div class="slide" style="background-image:linear-gradient(135deg,#111,#0b0b0b), radial-gradient(900px 220px at 50% 100%, rgba(249,208,72,.2), transparent)">
+        <div class="copy">
+          <div class="badge">テイクアウト導線</div>
+          <h2>テイクアウトは既存HPへ。WebView/外部遷移に対応。</h2>
+          <p class="small">アプリ内ブラウズ/外部ブラウザを選択可能。</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button aria-label="前へ" onclick="slide(-1)">&larr;</button>
+        <button aria-label="次へ" onclick="slide(1)">&rarr;</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-ttl">店舗情報（デモ）</h2>
+      <div class="store-grid">
+        <div>
+          <h3 style="margin:.2rem 0 .4rem 0">（サンプル）</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:.25rem 0 .5rem 0">
+            <a class="btn line" href="#" onclick="alert('お品書き（デモ）')">お品書き</a>
+            <a class="btn line" href="#" onclick="nav('takeout')">お持ち帰り</a>
+          </div>
+          <table class="table">
+            <tr><td>住所</td><td>（ダミー）</td></tr>
+            <tr><td>電話番号</td><td><a href="tel:0000000000">000-0000-0000</a></td></tr>
+            <tr><td>営業時間</td><td>11:00~20:30 (Lo.20:00)</td></tr>
+            <tr><td>定休日</td><td>無休（デモ）</td></tr>
+          </table>
+        </div>
+        <div>
+          <h3 style="margin:.2rem 0 .4rem 0">（サンプル）</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:.25rem 0 .5rem 0">
+            <a class="btn line" href="#" onclick="alert('お品書き（デモ）')">お品書き</a>
+            <a class="btn line" href="#" onclick="nav('takeout')">お持ち帰り</a>
+          </div>
+          <table class="table">
+            <tr><td>住所</td><td>（ダミー）</td></tr>
+            <tr><td>電話番号</td><td><a href="tel:0000000000">000-0000-0000</a></td></tr>
+            <tr><td>営業時間</td><td>10:00~19:00 (Lo.18:30)</td></tr>
+            <tr><td>定休日</td><td>火曜（デモ）</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-ttl">クーポン</h2>
+      <div id="couponPeek" class="list"></div>
+      <button class="btn" onclick="nav('coupons')">すべて見る</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h2 class="section-ttl" style="margin:0">お知らせ・DM</h2>
+        <a class="small" onclick="nav('dm')" style="cursor:pointer">一覧へ</a>
+      </div>
+      <div id="dmPeek" class="list"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-ttl">テイクアウト</h2>
+      <p class="small">アプリから公式サイトのテイクアウトページに移動します。</p>
+      <button class="btn" id="takeoutLink" onclick="window.open(seed.store.takeout_url || '#','_blank','noopener')">注文ページを開く</button>
+    </div>
+  </section>
+
+  <!-- DM -->
+  <section id="dm" class="hide">
+    <h2 class="section-ttl">お知らせ・DM</h2>
+    <div id="dmList" class="list"></div>
+  </section>
+
+  <!-- Coupons -->
+  <section id="coupons" class="hide">
+    <h2 class="section-ttl">クーポン</h2>
+    <div id="couponList" class="list"></div>
+  </section>
+
+  <!-- Member -->
+  <section id="member" class="hide">
+    <h2 class="section-ttl">会員証</h2>
+    <div class="card">
+      <div class="item">
+        <div class="qr">QR</div>
+        <div>
+          <div>会員ID：<strong id="mid"></strong><span class="tag">初回特典</span></div>
+          <div class="small">お名前：<span id="mname"></span></div>
+          <div class="small">ポイント：<span id="mpoints"></span> pt</div>
+        </div>
+      </div>
+      <p class="small">※QRはダミー表示。実運用ではサーバー側でワンタイム発行します。</p>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="settings" class="hide">
+    <h2 class="section-ttl">設定</h2>
+    <div class="card">
+      <label style="display:flex;justify-content:space-between;align-items:center">
+        <span>通知を受け取る</span>
+        <input type="checkbox" id="notifyToggle" checked />
+      </label>
+      <p class="small">通知ONで最新のクーポン/お知らせを受け取れます（デモは擬似プッシュ）。</p>
+    </div>
+    <div class="card">
+      <a class="small" href="#" onclick="alert('利用規約（ダミー）')">利用規約</a> ・
+      <a class="small" href="#" onclick="alert('プライバシーポリシー（ダミー）')">プライバシーポリシー</a>
+    </div>
+  </section>
+
+  <!-- Takeout pseudo page -->
+  <section id="takeout" class="hide">
+    <h2 class="section-ttl">テイクアウト</h2>
+    <div class="card">
+      <p class="small">この画面はデモです。実運用では外部の「お持ち帰りページ」へ遷移またはアプリ内WebViewで表示します。</p>
+      <button class="btn" onclick="window.open(seed.store.takeout_url || '#','_blank','noopener')">公式サイトを開く</button>
+    </div>
+  </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="footer-nav" role="tablist" aria-label="メインナビ">
+  <button class="tab active" id="tab-home" onclick="nav('home')">ホーム</button>
+  <button class="tab" id="tab-dm" onclick="nav('dm')">DM<span id="dmBadge" class="tag" style="display:none;margin-left:6px">新着</span></button>
+  <button class="tab" id="tab-coupons" onclick="nav('coupons')">クーポン</button>
+  <button class="tab" id="tab-member" onclick="nav('member')">会員</button>
+  <button class="tab" id="tab-settings" onclick="nav('settings')">設定</button>
+</nav>
+
+<!-- Seed data -->
+<script id="seed" type="application/json">
+{
+  "store": { "name": "Demo", "open_hours": "11:00-22:00", "tel": "000-0000-0000", "takeout_url": "https://example.com/takeout" },
+  "news": [
+    {"id":"n1","title":"数量限定！幕の内弁当¥1,280","body":"本日17時〜数量限定販売。アプリ提示でお茶無料。","published_at":"2025-08-26T06:00:00Z","unread":true},
+    {"id":"n2","title":"臨時休業のお知らせ","body":"9/2(火)は設備点検のため休業します。","published_at":"2025-08-25T03:00:00Z","unread":false}
+  ],
+  "coupons": [
+    {"id":"c1","title":"ドリンク1杯無料","desc":"初回来店限定。1回のみ。","valid_from":"2025-08-21","valid_to":"2025-09-30","limit":1,"code":"C1-XXXX"},
+    {"id":"c2","title":"ごはんおかわり無料","desc":"テイクアウト限定。","valid_from":"2025-08-21","valid_to":"2025-09-15","limit":2,"code":"C2-XXXX"}
+  ],
+  "member": { "id":"M-0001","name":"山田","points":120,"consent_marketing":true }
+}
+</script>
+
+<script>
+const $ = (q)=>document.querySelector(q);
+const seed = JSON.parse($('#seed').textContent);
+
+// Store header
+$('#storeName').textContent = seed.store.name;
+
+// DM render
+function renderDM(peek=false){
+  const list = peek ? $('#dmPeek') : $('#dmList');
+  if(!list) return;
+  list.innerHTML = '';
+  const items = peek ? seed.news.slice(0,1) : seed.news;
+  let hasUnread = false;
+  items.forEach(n=>{
+    if(n.unread) hasUnread = true;
+    const el = document.createElement('div');
+    el.className = 'item card';
+    el.innerHTML = `
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px">
+          <strong>${n.title}</strong>${n.unread?'<span class="tag">未読</span>':''}
+        </div>
+        <div class="meta">${new Date(n.published_at).toLocaleString('ja-JP')}</div>
+        <p class="small" style="margin:6px 0 0">${n.body}</p>
+      </div>`;
+    list.appendChild(el);
+  });
+  $('#dmBadge').style.display = hasUnread ? 'inline-flex' : 'none';
+}
+
+// Coupons render
+function renderCoupons(peek=false){
+  const list = peek ? $('#couponPeek') : $('#couponList');
+  list.innerHTML = '';
+  const items = peek ? seed.coupons.slice(0,1) : seed.coupons;
+  items.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <strong>${c.title}</strong>
+          <div class="small">${c.desc}</div>
+          <div class="small">有効期限：${c.valid_from}〜${c.valid_to} ／ 回数：${c.limit}</div>
+        </div>
+        <div class="qr" title="QR (ダミー)">${c.code}</div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="useCoupon('${c.id}')">使用する</button>
+        <button class="btn line" onclick="shareCoupon('${c.id}')">共有</button>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+function useCoupon(id){ alert('クーポン ' + id + ' を使用（デモ）'); }
+function shareCoupon(id){ navigator.share ? navigator.share({title:'クーポン', text:'お店のクーポン', url:location.href}).catch(()=>{}) : alert('共有API非対応'); }
+
+// Slider
+let slideIndex = 0;
+function showSlide(idx){
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach((s,i)=> s.classList.toggle('show', i===idx));
+}
+function slide(delta){ const slides = document.querySelectorAll('.slide'); slideIndex=(slideIndex+delta+slides.length)%slides.length; showSlide(slideIndex); }
+setInterval(()=>slide(1), 5000);
+
+// Nav
+const pages = ['home','dm','coupons','member','settings','takeout'];
+function nav(to){
+  pages.forEach(p=>{
+    const sec = document.getElementById(p);
+    const tab = document.getElementById('tab-'+p);
+    if(sec){ sec.classList.toggle('hide', p!==to); }
+    if(tab){ tab.classList.toggle('active', p===to); }
+  });
+  if(to==='dm'){ seed.news.forEach(n=>n.unread=false); renderDM(true); renderDM(false); }
+  if(to==='home'){ renderDM(true); renderCoupons(true); }
+}
+
+// Initial render
+renderDM(true); renderDM(false); renderCoupons(true); renderCoupons(false);
+</script>
+</body>
+</html>
