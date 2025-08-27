@@ -105,6 +105,36 @@ header{
 .small{font-size:12px;color:var(--ink-muted)}
 .tag{font-size:11px;background:rgba(249,208,72,.12);color:var(--brand);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:6px}
 hr.sep{border:none;border-top:1px solid var(--line);margin:16px 0}
+/* ========== スマホ崩れ防止 ========== */
+img, .icon, .qr {
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.footer-nav .tab {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 15px;
+  }
+  .container {
+    padding: 12px 12px 76px;
+  }
+  .btn {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  .card {
+    padding: 12px;
+  }
+}
 </style>
 </head>
 <body>
